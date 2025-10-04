@@ -1,0 +1,82 @@
+# Python 编译文件
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.Python
+
+# PyInstaller 打包文件
+build/
+dist/
+*.spec
+!pyinstaller_config.spec
+
+# Python 虚拟环境
+venv/
+env/
+ENV/
+.venv/
+.env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Claude Code 开发文档
+CLAUDE.md
+.claude/
+
+# IDE 和编辑器配置
+.vscode/
+.idea/
+*.code-workspace
+.vs/
+*.sublime-project
+*.sublime-workspace
+
+# 测试和调试
+test_*.py
+*_test.py
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# 临时文件和日志
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+*.old
+*~
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+
+# 打包发布文件（保留特定命名的发布文件）
+*.exe
+*.app
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.zip
+*.tar.gz
+*.rar
+!FreeAugmentCode-*.exe
+!FreeAugmentCode-*.zip
+!FreeAugmentCode-*.tar.gz
