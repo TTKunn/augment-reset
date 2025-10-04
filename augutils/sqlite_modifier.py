@@ -1,6 +1,7 @@
 import sqlite3
 import shutil
 import time
+import os
 from utils.paths import get_db_path
 
 def _create_backup(file_path: str) -> str:
@@ -24,22 +25,33 @@ def clean_augment_data() -> dict:
     """
     Cleans augment-related data from the SQLite database.
     Creates a backup before modification.
-    
+
     This function:
     1. Gets the SQLite database path
     2. Creates a backup of the database file
     3. Opens the database connection
     4. Deletes records where key contains 'augment'
-    
+
     Returns:
         dict: A dictionary containing operation results
         {
+            'skipped': bool,
+            'reason': str (only if skipped),
             'db_backup_path': str,
             'deleted_rows': int
         }
     """
     db_path = get_db_path()
-    
+
+    # Check if database file exists
+    if not os.path.exists(db_path):
+        return {
+            'skipped': True,
+            'reason': f'Database file not found at: {db_path}',
+            'db_backup_path': None,
+            'deleted_rows': 0
+        }
+
     # Create backup before modification
     db_backup_path = _create_backup(db_path)
     
@@ -51,11 +63,12 @@ def clean_augment_data() -> dict:
         # Execute the delete query
         cursor.execute("DELETE FROM ItemTable WHERE key LIKE '%augment%'")
         deleted_rows = cursor.rowcount
-        
+
         # Commit the changes
         conn.commit()
-        
+
         return {
+            'skipped': False,
             'db_backup_path': db_backup_path,
             'deleted_rows': deleted_rows
         }

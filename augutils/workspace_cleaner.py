@@ -34,23 +34,35 @@ def force_delete_directory(path: Path) -> bool:
 def clean_workspace_storage() -> dict:
     """
     Cleans the workspace storage directory after creating a backup.
-    
+
     This function:
     1. Gets the workspace storage path
     2. Creates a zip backup of all files in the directory
     3. Deletes all files in the directory
-    
+
     Returns:
         dict: A dictionary containing operation results
         {
+            'skipped': bool,
+            'reason': str (only if skipped),
             'backup_path': str,
-            'deleted_files_count': int
+            'deleted_files_count': int,
+            'failed_operations': list,
+            'failed_compressions': list
         }
     """
     workspace_path = get_workspace_storage_path()
-    
+
+    # Check if workspace storage directory exists
     if not os.path.exists(workspace_path):
-        raise FileNotFoundError(f"Workspace storage directory not found at: {workspace_path}")
+        return {
+            'skipped': True,
+            'reason': f'Workspace storage directory not found at: {workspace_path}',
+            'backup_path': None,
+            'deleted_files_count': 0,
+            'failed_operations': [],
+            'failed_compressions': []
+        }
     
     # Convert to Path object for better path handling
     workspace_path = Path(workspace_path)
@@ -128,8 +140,9 @@ def clean_workspace_storage() -> dict:
                         dir_path.rmdir()
             except (OSError, PermissionError) as e:
                 handle_error(e, dir_path, 'directory')
-    
+
     return {
+        'skipped': False,
         'backup_path': str(backup_path),
         'deleted_files_count': total_files,
         'failed_operations': failed_operations,

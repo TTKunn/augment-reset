@@ -26,7 +26,7 @@ def modify_telemetry_ids() -> dict:
     """
     Modifies the telemetry IDs in the VS Code storage.json file and machine ID file.
     Creates backups before modification.
-    
+
     This function:
     1. Creates backups of the storage.json and machine ID files
     2. Reads the storage.json file
@@ -34,10 +34,12 @@ def modify_telemetry_ids() -> dict:
     4. Updates the telemetry.machineId, telemetry.devDeviceId, and telemetry.sqmId values in storage.json
     5. Updates the machine ID file with the new machine ID
     6. Saves the modified files
-    
+
     Returns:
         dict: A dictionary containing the old and new IDs and backup information
         {
+            'skipped': bool,
+            'reason': str (only if skipped),
             'old_machine_id': str,
             'new_machine_id': str,
             'old_device_id': str,
@@ -50,9 +52,21 @@ def modify_telemetry_ids() -> dict:
     """
     storage_path = get_storage_path()
     machine_id_path = get_machine_id_path()
-    
+
+    # Check if storage.json exists
     if not os.path.exists(storage_path):
-        raise FileNotFoundError(f"Storage file not found at: {storage_path}")
+        return {
+            'skipped': True,
+            'reason': f'Storage file not found at: {storage_path}',
+            'old_machine_id': None,
+            'new_machine_id': None,
+            'old_device_id': None,
+            'new_device_id': None,
+            'old_sqm_id': None,
+            'new_sqm_id': None,
+            'storage_backup_path': None,
+            'machine_id_backup_path': None
+        }
     
     # Create backups before modification
     storage_backup_path = _create_backup(storage_path)
@@ -86,8 +100,9 @@ def modify_telemetry_ids() -> dict:
     # Write the new machine ID to the machine ID file
     with open(machine_id_path, 'w', encoding='utf-8') as f:
         f.write(new_device_id)
-    
+
     return {
+        'skipped': False,
         'old_machine_id': old_machine_id,
         'new_machine_id': new_machine_id,
         'old_device_id': old_device_id,
